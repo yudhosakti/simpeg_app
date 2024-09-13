@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simpeg_app/view/pages/detail_pegawai_page.dart';
+import 'package:simpeg_app/view/pages/search_pegawai_page.dart';
+import 'package:simpeg_app/view/pages/tambah_pegawai_page.dart';
 
 class HomeWidget extends StatelessWidget {
   const HomeWidget({super.key});
@@ -76,24 +79,33 @@ class HomeWidget extends StatelessWidget {
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.8,
                     height: MediaQuery.of(context).size.height,
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          hintText: "Cari Pegawai",
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Colors.grey,
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.black.withOpacity(0.7)),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          enabled: false,
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)))),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SearchPegawaiPage(),
+                            ));
+                      },
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            filled: true,
+                            hintText: "Cari Pegawai",
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Colors.grey,
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black.withOpacity(0.7)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            enabled: false,
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8)))),
+                      ),
                     ),
                   ),
                 ),
@@ -166,18 +178,27 @@ class HomeWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Card(
-                        color: Color.fromRGBO(66, 219, 219, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(12))),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.45,
-                          height: MediaQuery.of(context).size.height,
-                          child: MenuValueWidget(
-                            icon: Icons.save,
-                            seconTitle: "Semua Pegawai",
-                            titleFirst: "Manajemen",
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TambahPegawaiPage(),
+                              ));
+                        },
+                        child: Card(
+                          color: Color.fromRGBO(66, 219, 219, 1),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12))),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.45,
+                            height: MediaQuery.of(context).size.height,
+                            child: MenuValueWidget(
+                              icon: Icons.save,
+                              seconTitle: "Pegawai",
+                              titleFirst: "Tambah",
+                            ),
                           ),
                         ),
                       )
@@ -205,18 +226,27 @@ class HomeWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Card(
-                        color: Color.fromRGBO(219, 146, 72, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(12))),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.45,
-                          height: MediaQuery.of(context).size.height,
-                          child: MenuValueWidget(
-                            icon: Icons.save,
-                            seconTitle: "Semua User",
-                            titleFirst: "Manajemen",
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TambahPegawaiPage(),
+                              ));
+                        },
+                        child: Card(
+                          color: Color.fromRGBO(219, 146, 72, 1),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12))),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.45,
+                            height: MediaQuery.of(context).size.height,
+                            child: MenuValueWidget(
+                              icon: Icons.save,
+                              seconTitle: "User",
+                              titleFirst: "Tambah",
+                            ),
                           ),
                         ),
                       )
@@ -262,15 +292,6 @@ class DoubleTextWidget extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   fontSize: 22),
             ),
-            TextButton(
-                onPressed: () {},
-                child: Text(
-                  "Show All",
-                  style: GoogleFonts.nunito(
-                      color: Colors.blueAccent,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20),
-                ))
           ],
         ),
       ),
@@ -296,31 +317,40 @@ class ProfileHorizontalWidget extends StatelessWidget {
             padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * 0.01,
                 vertical: MediaQuery.of(context).size.height * 0.005),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.2,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.08,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                          opacity: 0.6,
-                          image: AssetImage('assets/default_profile.jpg'),
-                        ),
-                        color: Colors.grey,
-                        shape: BoxShape.circle),
-                  ),
-                  Text(
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                    "Yudho Sakti",
-                    style: GoogleFonts.nunito(
-                        color: Colors.black, fontWeight: FontWeight.w600),
-                  )
-                ],
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return DetailPegawaiPage();
+                  },
+                ));
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.2,
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.08,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                            opacity: 0.6,
+                            image: AssetImage('assets/default_profile.jpg'),
+                          ),
+                          color: Colors.grey,
+                          shape: BoxShape.circle),
+                    ),
+                    Text(
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                      "Yudho Sakti",
+                      style: GoogleFonts.nunito(
+                          color: Colors.black, fontWeight: FontWeight.w600),
+                    )
+                  ],
+                ),
               ),
             ),
           );
