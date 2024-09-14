@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:simpeg_app/providers/tambah_karyawan_provider.dart';
 
@@ -64,10 +67,14 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.grey,
-                        image: DecorationImage(
-                          opacity: 0.6,
-                          image: AssetImage('assets/default_profile.jpg'),
-                        ),
+                        image: provider.fileImage == null
+                            ? DecorationImage(
+                                opacity: 0.6,
+                                image: AssetImage('assets/default_profile.jpg'),
+                              )
+                            : DecorationImage(
+                                image: FileImage(provider.fileImage!),
+                                fit: BoxFit.fill),
                       ),
                       child: Stack(
                         children: [
@@ -86,7 +93,13 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                                           CircleBorder()),
                                       padding: WidgetStatePropertyAll(
                                           EdgeInsets.zero)),
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    if (await provider.takePickture()) {
+                                      log("Success");
+                                    } else {
+                                      log("Failed");
+                                    }
+                                  },
                                   child: Icon(
                                     Icons.camera,
                                     color: Colors.black,
@@ -101,25 +114,25 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
               ),
               SingleFormWidget(
                 isEditable: true,
-                editingController: TextEditingController(),
+                editingController: provider.namaPegawai,
                 hintText: "Masukkan Nama Pegawai",
                 title: "Nama Pegawai",
               ),
               SingleFormWidget(
                 isEditable: true,
-                editingController: TextEditingController(),
+                editingController: provider.OldNipPegawai,
                 hintText: "Masukkan NIP Lama",
                 title: "Old NIP",
               ),
               SingleFormWidget(
                 isEditable: true,
-                editingController: TextEditingController(),
+                editingController: provider.NewNipPegawai,
                 hintText: "Masukkan NIP Baru",
                 title: "New NIP",
               ),
               SingleFormWidget(
                 isEditable: true,
-                editingController: TextEditingController(),
+                editingController: provider.TempatLahirPegawai,
                 hintText: "Masukkan Tempat Lahir",
                 title: "Tempat Lahir",
               ),
@@ -154,7 +167,20 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                           padding: EdgeInsets.only(
                               right: MediaQuery.of(context).size.width * 0.3),
                           child: DateTimeFormField(
-                            onChanged: (value) {},
+                            initialValue: provider.tanggalLahir == null
+                                ? null
+                                : DateFormat('yyyy-MM-DD')
+                                    .parse(provider.tanggalLahir!),
+                            mode: DateTimeFieldPickerMode.date,
+                            canClear: true,
+                            onChanged: (value) {
+                              if (value != null) {
+                                provider.changeTanggal(value);
+                                log(DateFormat('yyyy-MM-DD')
+                                    .parse(provider.tanggalLahir!)
+                                    .toString());
+                              }
+                            },
                             decoration: InputDecoration(
                                 hintText: "Masukkan Tanggal Lahir",
                                 fillColor: Colors.white,
@@ -174,33 +200,42 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
               ),
               SingleFormWidget(
                 isEditable: true,
-                editingController: TextEditingController(),
+                editingController: provider.JabatanPegawai,
                 hintText: "Masukkan Jabatan",
                 title: "Jabatan",
               ),
               SingleFormWidget(
                 isEditable: true,
-                editingController: TextEditingController(),
+                editingController: provider.PengalamanPejabatPegawai,
                 hintText: "Masukkan Pengalaman Jabatan",
                 title: "Pengalaman Jabatan",
               ),
               DropDownCustomWidget(
-                data: jenisKelamin,
+                dataValue: provider.jenisKelamin,
+                code: 1,
+                provider: provider,
+                data: provider.dataJenisKelamin,
                 hintDataa: "Pilih Gender",
                 title: "Jenis Kelamin",
               ),
               DropDownCustomWidget(
-                data: listGolonganKaryawan,
+                dataValue: provider.golongan,
+                code: 2,
+                provider: provider,
+                data: provider.dataGolongan,
                 hintDataa: "Pilih Golongan",
                 title: "Golongan",
               ),
               DropDownCustomWidget(
-                data: listGolonganKaryawan,
+                dataValue: provider.pendidikanTerakhir,
+                code: 3,
+                provider: provider,
+                data: provider.dataPendidikan,
                 hintDataa: "Pilih Pendidikan Terakhir",
                 title: "Pendidikan Terakhir",
               ),
               SingleFormWidget(
-                  editingController: TextEditingController(),
+                  editingController: provider.pangkatPegawai,
                   hintText: "Pangkat Pegawai",
                   isEditable: false,
                   title: "Pangkat"),
@@ -255,6 +290,7 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                           );
                         } else {
                           return CustomItemComponentWidget(
+                            controller: provider.test[index].namaSertifikat,
                             code: 1,
                             index: index,
                             provider: provider,
@@ -318,6 +354,7 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                           );
                         } else {
                           return CustomItemComponentWidget(
+                            controller: provider.dataKelebihan[index].data,
                             code: 2,
                             index: index,
                             provider: provider,
@@ -381,6 +418,7 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                           );
                         } else {
                           return CustomItemComponentWidget(
+                            controller: provider.dataKekurangan[index].data,
                             code: 3,
                             index: index,
                             provider: provider,
@@ -444,6 +482,7 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                           );
                         } else {
                           return CustomItemComponentWidget(
+                            controller: provider.dataDiklat[index].data,
                             code: 4,
                             index: index,
                             provider: provider,
@@ -506,15 +545,24 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                                   color: Colors.blueAccent,
                                   fontWeight: FontWeight.w600),
                             )),
-                        TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              "Ok",
-                              style: GoogleFonts.nunito(
-                                  fontSize: 18,
-                                  color: Colors.blueAccent,
-                                  fontWeight: FontWeight.w600),
-                            ))
+                        Consumer<TambahKaryawanProvider>(
+                            builder: (context, provider, child) {
+                          return TextButton(
+                              onPressed: () {
+                                if (provider.tambahPegawaiFinal()) {
+                                  log("Berhasil");
+                                } else {
+                                  log("Gagal");
+                                }
+                              },
+                              child: Text(
+                                "Ok",
+                                style: GoogleFonts.nunito(
+                                    fontSize: 18,
+                                    color: Colors.blueAccent,
+                                    fontWeight: FontWeight.w600),
+                              ));
+                        })
                       ],
                     );
                   },
@@ -536,12 +584,14 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
 class CustomItemComponentWidget extends StatelessWidget {
   final String title;
   final int code;
+  final TextEditingController controller;
   final String hintTitle;
   final int index;
   final TambahKaryawanProvider provider;
   const CustomItemComponentWidget(
       {super.key,
       required this.hintTitle,
+      required this.controller,
       required this.title,
       required this.code,
       required this.index,
@@ -614,6 +664,7 @@ class CustomItemComponentWidget extends StatelessWidget {
                                     MediaQuery.of(context).size.width * 0.15),
                             child: Container(
                               child: TextFormField(
+                                controller: controller,
                                 decoration: InputDecoration(
                                     fillColor: Colors.white,
                                     filled: true,
@@ -641,15 +692,39 @@ class CustomItemComponentWidget extends StatelessWidget {
   }
 }
 
-class DropDownCustomWidget extends StatelessWidget {
+class DropDownCustomWidget extends StatefulWidget {
   final String title;
   final String hintDataa;
   final List<String> data;
+  final String dataValue;
+  final TambahKaryawanProvider provider;
+  final int code;
   const DropDownCustomWidget(
       {super.key,
+      required this.dataValue,
+      required this.code,
       required this.data,
+      required this.provider,
       required this.hintDataa,
       required this.title});
+
+  @override
+  State<DropDownCustomWidget> createState() => _DropDownCustomWidgetState();
+}
+
+class _DropDownCustomWidgetState extends State<DropDownCustomWidget> {
+  String? values;
+  @override
+  void initState() {
+    if (widget.code == 1) {
+      values = widget.provider.jenisKelamin;
+    } else if (widget.code == 2) {
+      values = widget.provider.golongan;
+    } else {
+      values = widget.provider.pendidikanTerakhir;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -670,7 +745,7 @@ class DropDownCustomWidget extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  title,
+                  widget.title,
                   style: GoogleFonts.nunito(
                       color: Colors.black,
                       fontSize: 18,
@@ -684,6 +759,7 @@ class DropDownCustomWidget extends StatelessWidget {
                 padding: EdgeInsets.only(
                     right: MediaQuery.of(context).size.width * 0.3),
                 child: DropdownButton(
+                  value: widget.dataValue,
                   menuMaxHeight: MediaQuery.of(context).size.height * 0.15,
                   alignment: Alignment.centerLeft,
                   elevation: 10,
@@ -693,10 +769,20 @@ class DropDownCustomWidget extends StatelessWidget {
                   hint: Padding(
                     padding: EdgeInsets.only(
                         left: MediaQuery.of(context).size.width * 0.005),
-                    child: Text(hintDataa),
+                    child: Text(widget.hintDataa),
                   ),
-                  onChanged: (value) {},
-                  items: data.map<DropdownMenuItem<String>>((String value) {
+                  onChanged: (valuetest) {
+                    if (widget.code == 1) {
+                      widget.provider.changeGender(valuetest!);
+                    } else if (widget.code == 2) {
+                      widget.provider.changeGolongan(valuetest!);
+                    } else {
+                      widget.provider.changePendidikan(valuetest!);
+                    }
+                    setState(() {});
+                  },
+                  items:
+                      widget.data.map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                         value: value, child: Text(value));
                   }).toList(),
@@ -861,6 +947,10 @@ class SingleFormWidget extends StatelessWidget {
                 padding: EdgeInsets.only(
                     right: MediaQuery.of(context).size.width * 0.3),
                 child: TextFormField(
+                  style: GoogleFonts.nunito(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 17),
                   enabled: isEditable,
                   controller: editingController,
                   decoration: InputDecoration(

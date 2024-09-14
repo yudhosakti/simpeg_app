@@ -1,4 +1,9 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:simpeg_app/models/kelebihan_model.dart';
 import 'package:simpeg_app/models/pangkat_golongan.dart';
 import 'package:simpeg_app/models/sertifikat_model.dart';
@@ -18,6 +23,25 @@ class TambahKaryawanProvider extends ChangeNotifier {
   List<DataCustomModel> dataDiklat = [
     DataCustomModel(data: TextEditingController(), idPegawai: 1)
   ];
+
+  List<String> dataGolongan = [
+    "2A",
+    "2B",
+    "2C",
+    "2D",
+    "3A",
+    "3B",
+    "3C",
+    "3D",
+    "4A",
+    "4B",
+    "4C",
+    "4D",
+    "4E"
+  ];
+
+  List<String> dataJenisKelamin = ["Laki-Laki", "Perempuan"];
+  List<String> dataPendidikan = ["SMA", "D3", "D4", "S1", "S2", "S3"];
 
   List<PangkatGolongan> pangkatGolongan = [
     PangkatGolongan(golongan: "2A", pangkat: "Pengatur Muda"),
@@ -39,6 +63,7 @@ class TambahKaryawanProvider extends ChangeNotifier {
   TextEditingController OldNipPegawai = TextEditingController();
 
   TextEditingController NewNipPegawai = TextEditingController();
+  TextEditingController pangkatPegawai = TextEditingController();
 
   TextEditingController TempatLahirPegawai = TextEditingController();
   String? tanggalLahir;
@@ -50,6 +75,9 @@ class TambahKaryawanProvider extends ChangeNotifier {
   TextEditingController JabatanPegawai = TextEditingController();
   TextEditingController PengalamanPejabatPegawai = TextEditingController();
   Map<String, dynamic>? data;
+  final ImagePicker imagePicker = ImagePicker();
+  File? fileImage;
+  XFile? platformFile;
 
   bool tambahPegawaiFinal() {
     if (validate()) {
@@ -60,6 +88,7 @@ class TambahKaryawanProvider extends ChangeNotifier {
       }
       data = {
         "nama": namaPegawai.text,
+        "gambar": fileImage == null ? '' : fileImage!.path,
         "oldNip": OldNipPegawai.text,
         "newNip": NewNipPegawai.text,
         "tempatLahir": TempatLahirPegawai.text,
@@ -68,12 +97,14 @@ class TambahKaryawanProvider extends ChangeNotifier {
         "gender": pickedGender,
         "pendidikan": pendidikanTerakhir,
         "jabatan": JabatanPegawai.text,
-        "pengalamanPejabata": PengalamanPejabatPegawai,
+        "pengalamanPejabata": PengalamanPejabatPegawai.text,
+        "pangkat": pickedPangkat,
         "sertifikar": test.toString(),
         "kelebihan": dataKelebihan.toString(),
         "kekurangan": dataKekurangan.toString(),
         "diklat": dataDiklat.toString()
       };
+      log(data.toString());
       print(data);
       return true;
     } else {
@@ -83,6 +114,13 @@ class TambahKaryawanProvider extends ChangeNotifier {
 
   void changeGender(String newGender) {
     jenisKelamin = newGender;
+    log(jenisKelamin);
+    notifyListeners();
+  }
+
+  void changeTanggal(DateTime newTanggal) {
+    DateTime dateFormat = newTanggal;
+    tanggalLahir = "${dateFormat.year}-${dateFormat.month}-${dateFormat.day}";
     notifyListeners();
   }
 
@@ -90,6 +128,7 @@ class TambahKaryawanProvider extends ChangeNotifier {
     golongan = newGolongan;
     for (var element in pangkatGolongan) {
       if (golongan == element.golongan) {
+        pangkatPegawai.text = element.pangkat;
         pickedPangkat = element.pangkat;
         break;
       }
@@ -123,10 +162,27 @@ class TambahKaryawanProvider extends ChangeNotifier {
         return false;
       }
     }
-    if (tanggalLahir == null) {
+    if (tanggalLahir == null || pickedPangkat == '') {
       return false;
     }
     return true;
+  }
+
+  Future<bool> takePickture() async {
+    try {
+      XFile? result = await imagePicker.pickImage(source: ImageSource.gallery);
+      if (result == null) {
+        return false;
+      } else {
+        platformFile = result;
+        fileImage = File(platformFile!.path);
+        log(fileImage!.path);
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 
   void tambahSertifikat() {
