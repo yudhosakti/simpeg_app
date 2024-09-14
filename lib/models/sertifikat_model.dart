@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
+
 class SertifikatModel {
-  final int idPegawai;
-  final String namaSertifikat;
+  int idPegawai;
+  final TextEditingController namaSertifikat;
   final String image;
 
   SertifikatModel(
