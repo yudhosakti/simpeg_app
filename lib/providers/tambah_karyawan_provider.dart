@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:simpeg_app/data/pegawai_data.dart';
 import 'package:simpeg_app/models/kelebihan_model.dart';
 import 'package:simpeg_app/models/pangkat_golongan.dart';
+import 'package:simpeg_app/models/pegawai_model.dart';
 import 'package:simpeg_app/models/sertifikat_model.dart';
 
 class TambahKaryawanProvider extends ChangeNotifier {
@@ -76,16 +78,38 @@ class TambahKaryawanProvider extends ChangeNotifier {
   TextEditingController PengalamanPejabatPegawai = TextEditingController();
   Map<String, dynamic>? data;
   final ImagePicker imagePicker = ImagePicker();
+  bool isLoading = false;
   File? fileImage;
   XFile? platformFile;
 
-  bool tambahPegawaiFinal() {
+  Future<bool> tambahPegawaiFinal(int idAdmin) async {
+    isLoading = true;
+    notifyListeners();
     if (validate()) {
       if (jenisKelamin == "Laki-Laki") {
         pickedGender = 'L';
       } else {
         pickedGender = 'P';
       }
+      String path = '';
+      if (fileImage != null) {
+        path = fileImage!.path;
+      }
+
+      PegawaiModel pegawaiModel = PegawaiModel(
+          foto: path,
+          golongan: golongan,
+          pengalamanJabatan: PengalamanPejabatPegawai.text,
+          idAdmin: idAdmin,
+          jabatan: JabatanPegawai.text,
+          jenisKelamin: pickedGender,
+          namaPegawai: namaPegawai.text,
+          newNip: int.parse(NewNipPegawai.text),
+          oldNip: int.parse(OldNipPegawai.text),
+          pangkat: pangkatPegawai.text,
+          pendidikan: pendidikanTerakhir,
+          tanggalLahir: tanggalLahir!,
+          tempatLahir: TempatLahirPegawai.text);
       data = {
         "nama": namaPegawai.text,
         "gambar": fileImage == null ? '' : fileImage!.path,
@@ -104,10 +128,44 @@ class TambahKaryawanProvider extends ChangeNotifier {
         "kekurangan": dataKekurangan.toString(),
         "diklat": dataDiklat.toString()
       };
-      log(data.toString());
-      print(data);
-      return true;
+      int dataku = await PegawaiData().tambahPegawai(pegawaiModel, idAdmin);
+      if (dataku != 0) {
+        if (test.isNotEmpty) {
+          for (var element in test) {
+            await PegawaiData().tambahSertifikatPegawai(
+                dataku, idAdmin, element.namaSertifikat.text);
+          }
+        }
+
+        if (dataKelebihan.isNotEmpty) {
+          for (var element in dataKelebihan) {
+            await PegawaiData()
+                .tambahKelebihanPegawai(dataku, idAdmin, element.data.text);
+          }
+        }
+        if (dataKekurangan.isNotEmpty) {
+          for (var element in dataKekurangan) {
+            await PegawaiData()
+                .tambahKekuranganPegawai(dataku, idAdmin, element.data.text);
+          }
+        }
+        if (dataDiklat.isNotEmpty) {
+          for (var element in dataDiklat) {
+            await PegawaiData()
+                .tambahDiklatPegawai(dataku, idAdmin, element.data.text);
+          }
+        }
+        isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        isLoading = false;
+        notifyListeners();
+        return false;
+      }
     } else {
+      isLoading = false;
+      notifyListeners();
       return false;
     }
   }
@@ -142,6 +200,15 @@ class TambahKaryawanProvider extends ChangeNotifier {
   }
 
   bool validate() {
+    if (namaPegawai.text.isEmpty ||
+        OldNipPegawai.text.isEmpty ||
+        NewNipPegawai.text.isEmpty ||
+        pangkatPegawai.text.isEmpty ||
+        TempatLahirPegawai.text.isEmpty ||
+        JabatanPegawai.text.isEmpty ||
+        PengalamanPejabatPegawai.text.isEmpty) {
+      return false;
+    }
     for (var element in test) {
       if (element.namaSertifikat.text.isEmpty) {
         return false;

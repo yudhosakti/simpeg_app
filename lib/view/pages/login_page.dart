@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:simpeg_app/providers/auth_provider.dart';
 import 'package:simpeg_app/view/pages/main_page.dart';
 import 'package:simpeg_app/view/pages/onboarding_page.dart';
 import 'package:simpeg_app/view/pages/register_page.dart';
@@ -33,20 +35,28 @@ class LoginPage extends StatelessWidget {
             title: "Login",
             subTitle: "Login to continue use the app",
           ),
-          TextEmailFormWidget(
-            editingController: TextEditingController(),
-            hint: "Enter Your Email",
-            isInVisible: false,
-            isPassword: false,
-            title: "Email",
-          ),
-          TextEmailFormWidget(
-            editingController: TextEditingController(),
-            hint: "Enter Your Password",
-            isInVisible: true,
-            isPassword: true,
-            title: "Password",
-          ),
+          Consumer<AuthProvider>(builder: (context, provider, child) {
+            return TextEmailFormWidget(
+              code: 0,
+              iconValue: false,
+              editingController: provider.etEmailLogin,
+              hint: "Enter Your Email",
+              isInVisible: false,
+              isPassword: false,
+              title: "Email",
+            );
+          }),
+          Consumer<AuthProvider>(builder: (context, provider, child) {
+            return TextEmailFormWidget(
+              code: 1,
+              iconValue: provider.passwordLogin,
+              editingController: provider.etPasswordLogin,
+              hint: "Enter Your Password",
+              isInVisible: true,
+              isPassword: true,
+              title: "Password",
+            );
+          }),
           Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.06,
@@ -72,25 +82,39 @@ class LoginPage extends StatelessWidget {
             child: Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height * 0.08,
-              child: ElevatedButton(
-                  style: ButtonStyle(
-                      elevation: WidgetStatePropertyAll(5),
-                      backgroundColor: WidgetStatePropertyAll(
-                          Color.fromARGB(255, 60, 129, 249))),
-                  onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(
-                      builder: (context) {
-                        return MainPage();
-                      },
+              child:
+                  Consumer<AuthProvider>(builder: (context, provider, child) {
+                return ElevatedButton(
+                    style: ButtonStyle(
+                        elevation: WidgetStatePropertyAll(5),
+                        backgroundColor: WidgetStatePropertyAll(
+                            Color.fromARGB(255, 60, 129, 249))),
+                    onPressed: () async {
+                      if (await provider.loginUser()) {
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                          builder: (context) {
+                            return MainPage();
+                          },
+                        ));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor: Colors.black,
+                            content: Text(
+                              provider.errorMessage,
+                              style: GoogleFonts.nunito(
+                                color: Colors.white,
+                              ),
+                            )));
+                      }
+                    },
+                    child: Text(
+                      "Login",
+                      style: GoogleFonts.nunito(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700),
                     ));
-                  },
-                  child: Text(
-                    "Login",
-                    style: GoogleFonts.nunito(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700),
-                  )),
+              }),
             ),
           ),
           Container(
@@ -269,12 +293,16 @@ class LogoTopWidget extends StatelessWidget {
 class TextEmailFormWidget extends StatelessWidget {
   final String title;
   final String hint;
+  final int code;
+  final bool iconValue;
   final TextEditingController editingController;
   final bool isPassword;
   final bool isInVisible;
   const TextEmailFormWidget(
       {super.key,
       required this.isPassword,
+      required this.iconValue,
+      required this.code,
       required this.hint,
       required this.isInVisible,
       required this.editingController,
@@ -314,17 +342,23 @@ class TextEmailFormWidget extends StatelessWidget {
                   color: Colors.grey.shade300,
                   borderRadius: BorderRadius.all(Radius.circular(16))),
               child: TextFormField(
-                obscureText: isPassword,
+                controller: editingController,
+                obscureText: iconValue,
                 style: GoogleFonts.nunito(color: Colors.black, fontSize: 18),
                 decoration: InputDecoration(
                     suffixIcon: isPassword
-                        ? IconButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.remove_red_eye_sharp,
-                              color: Colors.black,
-                            ))
+                        ? Consumer<AuthProvider>(
+                            builder: (context, provider, child) {
+                            return IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () {
+                                  provider.changeObsCure(code);
+                                },
+                                icon: Icon(
+                                  Icons.remove_red_eye_sharp,
+                                  color: Colors.black,
+                                ));
+                          })
                         : null,
                     hintText: hint,
                     contentPadding: EdgeInsets.symmetric(

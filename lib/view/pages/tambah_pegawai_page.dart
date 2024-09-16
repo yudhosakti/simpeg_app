@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:simpeg_app/providers/auth_provider.dart';
 import 'package:simpeg_app/providers/tambah_karyawan_provider.dart';
 
 class TambahPegawaiPage extends StatefulWidget {
@@ -547,12 +548,19 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                             )),
                         Consumer<TambahKaryawanProvider>(
                             builder: (context, provider, child) {
-                          return TextButton(
-                              onPressed: () {
-                                if (provider.tambahPegawaiFinal()) {
+                          return provider.isLoading ? CircularProgressIndicator() : TextButton(
+                              onPressed: () async {
+                                if (await provider.tambahPegawaiFinal(context
+                                    .read<AuthProvider>()
+                                    .adminModel!
+                                    .idAdmin)) {
                                   log("Berhasil");
+                                  Navigator.pop(context);
+                                  
                                 } else {
                                   log("Gagal");
+                                  Navigator.pop(context);
+                                  
                                 }
                               },
                               child: Text(

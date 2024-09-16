@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:simpeg_app/providers/auth_provider.dart';
 import 'package:simpeg_app/view/pages/login_page.dart';
 import 'package:simpeg_app/view/pages/onboarding_page.dart';
 
@@ -32,34 +35,50 @@ class RegisterPage extends StatelessWidget {
             title: "Register",
             subTitle: "Enter your personal information",
           ),
-          TextEmailFormWidget(
-            editingController: TextEditingController(),
-            hint: "Enter Your Name",
-            isInVisible: false,
-            isPassword: false,
-            title: "Username",
-          ),
-          TextEmailFormWidget(
-            editingController: TextEditingController(),
-            hint: "Enter Your Email",
-            isInVisible: false,
-            isPassword: false,
-            title: "Email",
-          ),
-          TextEmailFormWidget(
-            editingController: TextEditingController(),
-            hint: "Enter Password",
-            isInVisible: true,
-            isPassword: true,
-            title: "Password",
-          ),
-          TextEmailFormWidget(
-            editingController: TextEditingController(),
-            hint: "Enter Confirm Password",
-            isInVisible: true,
-            isPassword: true,
-            title: "Confirm Password",
-          ),
+          Consumer<AuthProvider>(builder: (context, provider, child) {
+            return TextEmailFormWidget(
+              code: 0,
+              iconValue: false,
+              editingController: provider.etUsernameRegister,
+              hint: "Enter Your Name",
+              isInVisible: false,
+              isPassword: false,
+              title: "Username",
+            );
+          }),
+          Consumer<AuthProvider>(builder: (context, provider, child) {
+            return TextEmailFormWidget(
+              code: 0,
+              iconValue: false,
+              editingController: provider.etEmailRegister,
+              hint: "Enter Your Email",
+              isInVisible: false,
+              isPassword: false,
+              title: "Email",
+            );
+          }),
+          Consumer<AuthProvider>(builder: (context, provider, child) {
+            return TextEmailFormWidget(
+              code: 2,
+              iconValue: provider.passwordRegister,
+              editingController: provider.etPasswordRegister,
+              hint: "Enter Password",
+              isInVisible: true,
+              isPassword: true,
+              title: "Password",
+            );
+          }),
+          Consumer<AuthProvider>(builder: (context, provider, child) {
+            return TextEmailFormWidget(
+              code: 3,
+              iconValue: provider.passwordConfirmRegister,
+              editingController: provider.etConfirmPasswordRegister,
+              hint: "Enter Confirm Password",
+              isInVisible: true,
+              isPassword: true,
+              title: "Confirm Password",
+            );
+          }),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
@@ -69,24 +88,34 @@ class RegisterPage extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width * 0.04),
-              child: ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                          Color.fromARGB(255, 60, 129, 249))),
-                  onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(
-                      builder: (context) {
-                        return LoginPage();
-                      },
+              child:
+                  Consumer<AuthProvider>(builder: (context, provider, child) {
+                return ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Color.fromARGB(255, 60, 129, 249))),
+                    onPressed: () async {
+                      if (await provider.registerUser()) {
+                        Fluttertoast.showToast(msg: "Register Success");
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                          builder: (context) {
+                            return LoginPage();
+                          },
+                        ));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor: Colors.black,
+                            content: Text(provider.errorMessage)));
+                      }
+                    },
+                    child: Text(
+                      "Register",
+                      style: GoogleFonts.nunito(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20),
                     ));
-                  },
-                  child: Text(
-                    "Register",
-                    style: GoogleFonts.nunito(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20),
-                  )),
+              }),
             ),
           )
         ],

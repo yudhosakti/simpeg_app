@@ -321,7 +321,9 @@ class ProfileHorizontalWidget extends StatelessWidget {
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (context) {
-                    return DetailPegawaiPage();
+                    return DetailPegawaiPage(
+                      idPegawai: 1,
+                    );
                   },
                 ));
               },
