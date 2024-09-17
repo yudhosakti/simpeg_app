@@ -190,4 +190,60 @@ class PegawaiData {
       return null;
     }
   }
+
+  Future<bool> updatePegawai(PegawaiGetModel pegawai, int idAdmin) async {
+    try {
+      print("halo");
+      var response = await http.put(Uri.parse("${hostData}/pegawai"),
+          headers: {
+            "Accept": "application/json",
+            "content-type": "application/json",
+          },
+          body: jsonEncode({
+            "id_pegawai": pegawai.idPegawai,
+            "idAdmin": idAdmin,
+            "oldNip": pegawai.oldNip,
+            "newNip": pegawai.newNip,
+            "namaPegawai": pegawai.namaPegawai,
+            "jenisKelamin": pegawai.jenisKelamin,
+            "tempatLahir": pegawai.tempatLahir,
+            "tanggalLahir": pegawai.tanggalLahir,
+            "pangkat": pegawai.pangkat,
+            "golongan": pegawai.golongan,
+            "pendidikan": pegawai.pendidikan,
+            "jabatan": pegawai.jabatan,
+            "pengalamanJabatan": pegawai.pengalamanJabatan
+          }));
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<bool> updateProfilePegawaiOnly(String path, int idPegawai) async {
+    try {
+      Dio dio = Dio();
+      FormData formData = FormData.fromMap({
+        "image":
+            await MultipartFile.fromFile(path, filename: path.split('/').last),
+        "idPegawai": idPegawai,
+      });
+      var response = await dio.put("${hostData}/pegawai/profile",
+          data: formData, options: Options(contentType: 'multipart/form-data'));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

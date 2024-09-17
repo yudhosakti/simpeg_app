@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simpeg_app/data/pegawai_data.dart';
+import 'package:simpeg_app/models/pegawai_get_model.dart';
 import 'package:simpeg_app/view/pages/detail_pegawai_page.dart';
 import 'package:simpeg_app/view/pages/search_pegawai_page.dart';
 import 'package:simpeg_app/view/pages/tambah_pegawai_page.dart';
+import 'package:simpeg_app/view/pages/view_pegawai_page.dart';
 
 class HomeWidget extends StatelessWidget {
   const HomeWidget({super.key});
@@ -161,7 +164,13 @@ class HomeWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewPegawaiPage(),
+                              ));
+                        },
                         child: Card(
                           color: Color.fromRGBO(226, 97, 97, 1),
                           shape: RoundedRectangleBorder(
@@ -260,11 +269,40 @@ class HomeWidget extends StatelessWidget {
         DoubleTextWidget(
           title: "Recent Employee",
         ),
-        ProfileHorizontalWidget(),
+        FutureBuilder(
+            future: PegawaiData().getAllPegawai(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              } else if (snapshot.data!.isEmpty) {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  child: Center(
+                    child: Text(
+                      "No Data Yet",
+                      style: GoogleFonts.nunito(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 19),
+                    ),
+                  ),
+                );
+              } else {
+                return ProfileHorizontalWidget(
+                  pegawai: snapshot.data!,
+                );
+              }
+            }),
         DoubleTextWidget(
           title: "Recent User",
         ),
-        ProfileHorizontalWidget(),
       ],
     );
   }
@@ -300,9 +338,8 @@ class DoubleTextWidget extends StatelessWidget {
 }
 
 class ProfileHorizontalWidget extends StatelessWidget {
-  const ProfileHorizontalWidget({
-    super.key,
-  });
+  final List<PegawaiGetModel> pegawai;
+  const ProfileHorizontalWidget({super.key, required this.pegawai});
 
   @override
   Widget build(BuildContext context) {
@@ -310,7 +347,7 @@ class ProfileHorizontalWidget extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.12,
       child: ListView.builder(
-        itemCount: 8,
+        itemCount: pegawai.length > 5 ? 5 : pegawai.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           return Padding(
@@ -322,7 +359,7 @@ class ProfileHorizontalWidget extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (context) {
                     return DetailPegawaiPage(
-                      idPegawai: 1,
+                      idPegawai: pegawai[index].idPegawai,
                     );
                   },
                 ));
@@ -337,17 +374,22 @@ class ProfileHorizontalWidget extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.08,
                       decoration: BoxDecoration(
-                          image: DecorationImage(
-                            opacity: 0.6,
-                            image: AssetImage('assets/default_profile.jpg'),
-                          ),
+                          image: pegawai[index].foto == ''
+                              ? DecorationImage(
+                                  opacity: 0.6,
+                                  image:
+                                      AssetImage('assets/default_profile.jpg'),
+                                )
+                              : DecorationImage(
+                                  image: NetworkImage(pegawai[index].foto),
+                                  fit: BoxFit.cover),
                           color: Colors.grey,
                           shape: BoxShape.circle),
                     ),
                     Text(
                       maxLines: 1,
                       overflow: TextOverflow.fade,
-                      "Yudho Sakti",
+                      pegawai[index].namaPegawai,
                       style: GoogleFonts.nunito(
                           color: Colors.black, fontWeight: FontWeight.w600),
                     )
