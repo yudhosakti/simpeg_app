@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -548,28 +549,31 @@ class _TambahPegawaiPageState extends State<TambahPegawaiPage> {
                             )),
                         Consumer<TambahKaryawanProvider>(
                             builder: (context, provider, child) {
-                          return provider.isLoading ? CircularProgressIndicator() : TextButton(
-                              onPressed: () async {
-                                if (await provider.tambahPegawaiFinal(context
-                                    .read<AuthProvider>()
-                                    .adminModel!
-                                    .idAdmin)) {
-                                  log("Berhasil");
-                                  Navigator.pop(context);
-                                  
-                                } else {
-                                  log("Gagal");
-                                  Navigator.pop(context);
-                                  
-                                }
-                              },
-                              child: Text(
-                                "Ok",
-                                style: GoogleFonts.nunito(
-                                    fontSize: 18,
-                                    color: Colors.blueAccent,
-                                    fontWeight: FontWeight.w600),
-                              ));
+                          return provider.isLoading
+                              ? CircularProgressIndicator()
+                              : TextButton(
+                                  onPressed: () async {
+                                    if (await provider.tambahPegawaiFinal(
+                                        context
+                                            .read<AuthProvider>()
+                                            .adminModel!
+                                            .idAdmin)) {
+                                      log("Berhasil");
+                                      Fluttertoast.showToast(msg: "Berhasil");
+                                      Navigator.pop(context);
+                                    } else {
+                                      log("Gagal");
+                                      Fluttertoast.showToast(msg: "Gagal");
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: Text(
+                                    "Ok",
+                                    style: GoogleFonts.nunito(
+                                        fontSize: 18,
+                                        color: Colors.blueAccent,
+                                        fontWeight: FontWeight.w600),
+                                  ));
                         })
                       ],
                     );

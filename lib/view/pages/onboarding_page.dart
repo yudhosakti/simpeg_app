@@ -17,7 +17,7 @@ class OnboardingPage extends StatelessWidget {
         children: [
           Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.4,
+            height: MediaQuery.of(context).size.height * 0.35,
             decoration: BoxDecoration(
                 color: Colors.grey,
                 image: DecorationImage(
@@ -26,49 +26,39 @@ class OnboardingPage extends StatelessWidget {
           Expanded(
             child: Container(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.08,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.2,
-                          height: MediaQuery.of(context).size.height,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                  image: AssetImage('assets/logo.png'),
-                                  fit: BoxFit.fill)),
-                        ),
-                        Expanded(
-                            child: Container(
-                          child: Text(
-                            "SIM Kepegawaian BPS Pacitan",
-                            style: GoogleFonts.poppins(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: MediaQuery.of(context).size.width * 0.01),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.12,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.17,
+                            height: MediaQuery.of(context).size.height,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    image: AssetImage('assets/appicon.png'),
+                                    fit: BoxFit.cover)),
                           ),
-                        ))
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal:
-                                MediaQuery.of(context).size.width * 0.03),
-                        child: Text(
-                          "Memanajemen Sistem Kepegawaian di BPS Pacitan",
-                          style: GoogleFonts.poppins(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 22),
-                        ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          Expanded(
+                              child: Container(
+                            child: Text(
+                              "Sistem Informasi Pegawai Lokal (SimLo) BPS Pacitan",
+                              style: GoogleFonts.poppins(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ))
+                        ],
                       ),
                     ),
                   ),
@@ -80,12 +70,12 @@ class OnboardingPage extends StatelessWidget {
                         padding: EdgeInsets.symmetric(
                             horizontal:
                                 MediaQuery.of(context).size.width * 0.03),
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Text(
-                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy ",
-                            style: GoogleFonts.poppins(color: Colors.grey),
-                          ),
+                        child: Text(
+                          "Memanajemen Sistem Kepegawaian Lokal di BPS Pacitan",
+                          style: GoogleFonts.poppins(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 22),
                         ),
                       ),
                     ),
@@ -93,6 +83,7 @@ class OnboardingPage extends StatelessWidget {
                   Expanded(
                       child: Container(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
                           padding: EdgeInsets.symmetric(
@@ -109,7 +100,11 @@ class OnboardingPage extends StatelessWidget {
                                     backgroundColor: WidgetStatePropertyAll(
                                         Color.fromARGB(255, 60, 129, 249))),
                                 onPressed: () {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginPage(),
+                                      ));
                                 },
                                 child: Text(
                                   "Login",

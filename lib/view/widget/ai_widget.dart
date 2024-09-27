@@ -60,7 +60,7 @@ class AiWidget extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Center(
                         child: Text(
-                          "Total Employee Choose : 30",
+                          "Person Choose : 30",
                           style: GoogleFonts.nunito(
                               color: Colors.white, fontSize: 19),
                         ),

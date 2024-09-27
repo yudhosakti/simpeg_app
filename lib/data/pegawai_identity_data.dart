@@ -123,6 +123,7 @@ class PegawaiIdentityData {
       return false;
     }
   }
+
   Future<bool> deleteKelebihan(int idKelebihan) async {
     try {
       var response = await http.delete(
@@ -138,10 +139,11 @@ class PegawaiIdentityData {
       return false;
     }
   }
+
   Future<bool> deleteKekurangan(int idKekurangan) async {
     try {
-      var response = await http.delete(
-          Uri.parse("${hostData}/trait/kekurangan?id_kekurangan=${idKekurangan}"));
+      var response = await http.delete(Uri.parse(
+          "${hostData}/trait/kekurangan?id_kekurangan=${idKekurangan}"));
 
       if (response.statusCode == 200) {
         return true;
@@ -153,14 +155,31 @@ class PegawaiIdentityData {
       return false;
     }
   }
+
   Future<bool> deleteDiklat(int idDiklat) async {
     try {
-      var response = await http.delete(
-          Uri.parse("${hostData}/diklat?id_diklat=${idDiklat}"));
+      var response = await http
+          .delete(Uri.parse("${hostData}/diklat?id_diklat=${idDiklat}"));
 
       if (response.statusCode == 200) {
         return true;
       } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<bool> deletePegawai(int idPegawai) async {
+    try {
+      var response = await http
+          .delete(Uri.parse("${hostData}/pegawai?id_pegawai=${idPegawai}"));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print(response.body);
         return false;
       }
     } catch (e) {

@@ -170,8 +170,9 @@ class SearchPegawaiPage extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      Expanded(
-                                          child: Container(
+                                      Container(
+                                        width: getWidth() * 0.65,
+                                        height: getHeight(),
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,
@@ -199,6 +200,100 @@ class SearchPegawaiPage extends StatelessWidget {
                                                   fontWeight: FontWeight.w700),
                                             ),
                                           ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                          child: Container(
+                                        child: Center(
+                                          child: IconButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      content: Text(
+                                                        "Apakah anda yakin ingin menghapus pegawai ini ?",
+                                                        style:
+                                                            GoogleFonts.nunito(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 17),
+                                                      ),
+                                                      actions: [
+                                                        TextButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            child: Text(
+                                                              "Cancel",
+                                                              style: GoogleFonts.nunito(
+                                                                  color: Colors
+                                                                      .redAccent,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  fontSize: 18),
+                                                            )),
+                                                        provider.isLoading
+                                                            ? CircularProgressIndicator()
+                                                            : TextButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  if (await provider.deleteSelectedPegawai(provider
+                                                                      .pegawaiList[
+                                                                          index]
+                                                                      .idPegawai)) {
+                                                                    Fluttertoast
+                                                                        .showToast(
+                                                                            msg:
+                                                                                "Berhasil Hapus");
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  } else {
+                                                                    Fluttertoast
+                                                                        .showToast(
+                                                                            msg:
+                                                                                "Gagal Hapus");
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  }
+                                                                },
+                                                                child: Text(
+                                                                  "Ok",
+                                                                  style: GoogleFonts.nunito(
+                                                                      color: Colors
+                                                                          .blueAccent,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600,
+                                                                      fontSize:
+                                                                          18),
+                                                                ))
+                                                      ],
+                                                      title: Text(
+                                                        "Hapus Pegawai",
+                                                        style:
+                                                            GoogleFonts.nunito(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontSize: 20),
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              icon: Icon(
+                                                size: 32,
+                                                Icons.delete,
+                                                color: Colors.redAccent,
+                                              )),
                                         ),
                                       ))
                                     ],

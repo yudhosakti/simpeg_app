@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simpeg_app/data/pegawai_data.dart';
+import 'package:simpeg_app/data/pegawai_identity_data.dart';
 import 'package:simpeg_app/models/pegawai_get_model.dart';
 
 class SearchProvider extends ChangeNotifier {
@@ -23,6 +24,25 @@ class SearchProvider extends ChangeNotifier {
       return true;
     } else {
       pegawaiList = await PegawaiData().getAllPegawai();
+      isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<void> getAllPegawai() async {
+    pegawaiList = await PegawaiData().getAllPegawai();
+  }
+
+  Future<bool> deleteSelectedPegawai(int idPegawai) async {
+    isLoading = true;
+    notifyListeners();
+    if (await PegawaiIdentityData().deletePegawai(idPegawai)) {
+      await getAllPegawai();
+      isLoading = false;
+      notifyListeners();
+      return true;
+    } else {
       isLoading = false;
       notifyListeners();
       return false;

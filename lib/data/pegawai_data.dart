@@ -10,29 +10,58 @@ class PegawaiData {
   Future<int> tambahPegawai(PegawaiModel pegawai, int idAdmin) async {
     try {
       Dio dio = Dio();
-      FormData formData = FormData.fromMap({
-        "image": await MultipartFile.fromFile(pegawai.foto,
-            filename: pegawai.foto.split('/').last),
-        "id_admin": idAdmin,
-        "oldNip": pegawai.oldNip,
-        "newNip": pegawai.newNip,
-        "nama": pegawai.namaPegawai,
-        "jenisKelamin": pegawai.jenisKelamin,
-        "tempatLahir": pegawai.tempatLahir,
-        "tanggalLahir": pegawai.tanggalLahir,
-        "pangkat": pegawai.pangkat,
-        "golongan": pegawai.golongan,
-        "pendidikan": pegawai.pendidikan,
-        "jabatan": pegawai.jabatan,
-        "pengalamanJabatan": pegawai.pengalamanJabatan
-      });
-      var response = await dio.post("${hostData}/pegawai",
-          data: formData, options: Options(contentType: 'multipart/form-data'));
-      print(response.data);
-      if (response.statusCode == 200) {
-        return response.data['id'];
+      if (pegawai.foto == '') {
+        FormData formData = FormData.fromMap({
+          "id_admin": idAdmin,
+          "oldNip": pegawai.oldNip,
+          "newNip": pegawai.newNip,
+          "nama": pegawai.namaPegawai,
+          "jenisKelamin": pegawai.jenisKelamin,
+          "tempatLahir": pegawai.tempatLahir,
+          "tanggalLahir": pegawai.tanggalLahir,
+          "pangkat": pegawai.pangkat,
+          "golongan": pegawai.golongan,
+          "pendidikan": pegawai.pendidikan,
+          "jabatan": pegawai.jabatan,
+          "pengalamanJabatan": pegawai.pengalamanJabatan
+        });
+
+        var response = await dio.post("${hostData}/pegawai",
+            data: formData,
+            options: Options(contentType: 'multipart/form-data'));
+        print(response.data);
+        if (response.statusCode == 200) {
+          return response.data['id'];
+        } else {
+          return 0;
+        }
       } else {
-        return 0;
+        FormData formData = FormData.fromMap({
+          "image": await MultipartFile.fromFile(pegawai.foto,
+              filename: pegawai.foto.split('/').last),
+          "id_admin": idAdmin,
+          "oldNip": pegawai.oldNip,
+          "newNip": pegawai.newNip,
+          "nama": pegawai.namaPegawai,
+          "jenisKelamin": pegawai.jenisKelamin,
+          "tempatLahir": pegawai.tempatLahir,
+          "tanggalLahir": pegawai.tanggalLahir,
+          "pangkat": pegawai.pangkat,
+          "golongan": pegawai.golongan,
+          "pendidikan": pegawai.pendidikan,
+          "jabatan": pegawai.jabatan,
+          "pengalamanJabatan": pegawai.pengalamanJabatan
+        });
+
+        var response = await dio.post("${hostData}/pegawai",
+            data: formData,
+            options: Options(contentType: 'multipart/form-data'));
+        print(response.data);
+        if (response.statusCode == 200) {
+          return response.data['id'];
+        } else {
+          return 0;
+        }
       }
     } catch (e) {
       return 0;

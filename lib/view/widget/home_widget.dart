@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:simpeg_app/data/pegawai_data.dart';
 import 'package:simpeg_app/models/pegawai_get_model.dart';
+import 'package:simpeg_app/providers/auth_provider.dart';
 import 'package:simpeg_app/view/pages/detail_pegawai_page.dart';
 import 'package:simpeg_app/view/pages/search_pegawai_page.dart';
 import 'package:simpeg_app/view/pages/tambah_pegawai_page.dart';
@@ -19,51 +21,59 @@ class HomeWidget extends StatelessWidget {
               horizontal: MediaQuery.of(context).size.width * 0.01),
           child: Card(
             elevation: 6,
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.08,
-              child: Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.2,
-                      height: MediaQuery.of(context).size.height,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                            opacity: 0.6,
-                            image: AssetImage('assets/default_profile.jpg'),
-                          ),
-                          color: Colors.grey,
-                          shape: BoxShape.circle),
-                    ),
-                  ),
-                  Expanded(
+            child: Consumer<AuthProvider>(builder: (context, provider, child) {
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.08,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 5),
                       child: Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Yudho Sakti Rama Sultan Alfaridzi",
-                          style: GoogleFonts.nunito(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18),
-                        ),
-                        Text(
-                          "yudhosakti28@gmail.com",
-                          style: GoogleFonts.nunito(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16),
-                        )
-                      ],
+                        width: MediaQuery.of(context).size.width * 0.2,
+                        height: MediaQuery.of(context).size.height,
+                        decoration: BoxDecoration(
+                            image: provider.adminModel!.avatar == ''
+                                ? DecorationImage(
+                                    opacity: 0.6,
+                                    image: AssetImage(
+                                        'assets/default_profile.jpg'),
+                                  )
+                                : DecorationImage(
+                                    image: NetworkImage(
+                                        provider.adminModel!.avatar),
+                                    fit: BoxFit.fill),
+                            color: Colors.grey,
+                            shape: BoxShape.circle),
+                      ),
                     ),
-                  ))
-                ],
-              ),
-            ),
+                    Expanded(
+                        child: Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            provider.adminModel!.username,
+                            style: GoogleFonts.nunito(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 18),
+                          ),
+                          Text(
+                            provider.adminModel!.email,
+                            style: GoogleFonts.nunito(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16),
+                          )
+                        ],
+                      ),
+                    ))
+                  ],
+                ),
+              );
+            }),
           ),
         ),
         SizedBox(
@@ -154,7 +164,7 @@ class HomeWidget extends StatelessWidget {
               horizontal: MediaQuery.of(context).size.width * 0.02),
           child: Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.35,
+            height: MediaQuery.of(context).size.height * 0.2,
             child: Column(
               children: [
                 Container(
@@ -181,7 +191,7 @@ class HomeWidget extends StatelessWidget {
                             height: MediaQuery.of(context).size.height,
                             child: MenuValueWidget(
                               icon: Icons.save,
-                              seconTitle: "Semua Pegawai",
+                              seconTitle: "Pegawai",
                               titleFirst: "Lihat",
                             ),
                           ),
@@ -214,54 +224,54 @@ class HomeWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.175,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Card(
-                        color: Color.fromRGBO(67, 81, 209, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(12))),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.45,
-                          height: MediaQuery.of(context).size.height,
-                          child: MenuValueWidget(
-                            icon: Icons.save,
-                            seconTitle: "Semua User",
-                            titleFirst: "Lihat",
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TambahPegawaiPage(),
-                              ));
-                        },
-                        child: Card(
-                          color: Color.fromRGBO(219, 146, 72, 1),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12))),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.45,
-                            height: MediaQuery.of(context).size.height,
-                            child: MenuValueWidget(
-                              icon: Icons.save,
-                              seconTitle: "User",
-                              titleFirst: "Tambah",
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
+                // Container(
+                //   width: MediaQuery.of(context).size.width,
+                //   height: MediaQuery.of(context).size.height * 0.175,
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Card(
+                //         color: Color.fromRGBO(67, 81, 209, 1),
+                //         shape: RoundedRectangleBorder(
+                //             borderRadius:
+                //                 BorderRadius.all(Radius.circular(12))),
+                //         child: Container(
+                //           width: MediaQuery.of(context).size.width * 0.45,
+                //           height: MediaQuery.of(context).size.height,
+                //           child: MenuValueWidget(
+                //             icon: Icons.save,
+                //             seconTitle: "Semua User",
+                //             titleFirst: "Lihat",
+                //           ),
+                //         ),
+                //       ),
+                //       GestureDetector(
+                //         onTap: () {
+                //           Navigator.push(
+                //               context,
+                //               MaterialPageRoute(
+                //                 builder: (context) => TambahPegawaiPage(),
+                //               ));
+                //         },
+                //         child: Card(
+                //           color: Color.fromRGBO(219, 146, 72, 1),
+                //           shape: RoundedRectangleBorder(
+                //               borderRadius:
+                //                   BorderRadius.all(Radius.circular(12))),
+                //           child: Container(
+                //             width: MediaQuery.of(context).size.width * 0.45,
+                //             height: MediaQuery.of(context).size.height,
+                //             child: MenuValueWidget(
+                //               icon: Icons.save,
+                //               seconTitle: "User",
+                //               titleFirst: "Tambah",
+                //             ),
+                //           ),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // )
               ],
             ),
           ),
@@ -300,9 +310,6 @@ class HomeWidget extends StatelessWidget {
                 );
               }
             }),
-        DoubleTextWidget(
-          title: "Recent User",
-        ),
       ],
     );
   }
@@ -388,7 +395,7 @@ class ProfileHorizontalWidget extends StatelessWidget {
                     ),
                     Text(
                       maxLines: 1,
-                      overflow: TextOverflow.fade,
+                      overflow: TextOverflow.ellipsis,
                       pegawai[index].namaPegawai,
                       style: GoogleFonts.nunito(
                           color: Colors.black, fontWeight: FontWeight.w600),
